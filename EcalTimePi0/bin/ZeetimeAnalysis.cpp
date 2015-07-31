@@ -873,14 +873,14 @@ int main (int argc, char** argv)
     // do analysis if the LS is in the desired range  
     if( treeVars_.lumiSection<minLS_  || maxLS_<treeVars_.lumiSection) continue;
     
-    bool verticesAreOnlyNextToNominalIP;
+    //bool verticesAreOnlyNextToNominalIP;
     int  count=0;
     
     for(int v=0; v<treeVars_.nVertices; v++  )
 	{        if (fabs(treeVars_.vtxZ[0])<15) count++; }
     
-    if ( treeVars_.nVertices >0 && count==treeVars_.nVertices ) verticesAreOnlyNextToNominalIP = true;
-    else                                                        verticesAreOnlyNextToNominalIP = false;
+   // if ( treeVars_.nVertices >0 && count==treeVars_.nVertices ) verticesAreOnlyNextToNominalIP = true;
+   // else                                                        verticesAreOnlyNextToNominalIP = false;
     
     //    --vertex: require vertex@IP (1), veto it (2) or either (0, or unset)
    // if (flagOneVertex_ ==1 && (!verticesAreOnlyNextToNominalIP) ) continue;

@@ -1042,18 +1042,20 @@ ClusterTime timeAndUncertSingleCluster(int bClusterIndex)
   // loop on the cry components of a basic cluster; get timeBest and uncertainty 
   for(int thisCry=0; thisCry<treeVars_.nXtalsInCluster[bClusterIndex]; thisCry++)
   {
-    bool  thisIsInEB=false;
+    //bool  thisIsInEB=false;
     float sigmaNoiseOfThis=0;
     if(treeVars_.xtalInBCIEta[bClusterIndex][thisCry]!=-999999)       {
       sigmaNoiseOfThis   =sigmaNoiseEB;
       timingResParamN    =timingResParamNEB;
       timingResParamConst=timingResParamConstEB;
-      thisIsInEB=true;    }
+      //thisIsInEB=true; 
+      }
     else if(treeVars_.xtalInBCIy[bClusterIndex][thisCry]!=-999999)    {
       sigmaNoiseOfThis=sigmaNoiseEE;
       timingResParamN    =timingResParamNEE;
       timingResParamConst=timingResParamConstEE;
-      thisIsInEB=false;    }
+      //thisIsInEB=false;   
+      }
     else    {  std::cout << "crystal neither in eb nor in ee?? PROBLEM." << std::endl;}
     float ampliOverSigOfThis = treeVars_.xtalInBCAmplitudeADC[bClusterIndex][thisCry] / sigmaNoiseOfThis; 
     if( ampliOverSigOfThis < minAmpliOverSigma_) continue;
@@ -1983,7 +1985,8 @@ SetOfIntPairs selectPi0Candidates()
   float e22A, e33A,    e22B, e33B;
   float eTGammaMinA,   eTGammaMinB;
   float s4s9GammaMinA, s4s9GammaMinB;
-  bool  AisEB,         BisEB;
+  //bool  AisEB;   
+  bool  BisEB;
   float eTPi0Min;
 
   // (FIRST) loop on basic cluster - to build pi0 candidates and get the mass
@@ -1996,12 +1999,12 @@ SetOfIntPairs selectPi0Candidates()
       
       // discriminate between EE and EB and set thresholds accordingly
       if ( fabs(treeVars_.clusterEta[bClusterA]) < BarrelLimit) {
-        AisEB         = true;
+        //AisEB         = true;
         eTGammaMinA   = eTGammaMinEB_;
         s4s9GammaMinA = s4s9GammaMinEB_;
       }
       else{
-        AisEB         = false;
+        //AisEB         = false;
         eTGammaMinA   = eTGammaMinEE_;
         s4s9GammaMinA = s4s9GammaMinEE_;
       }
