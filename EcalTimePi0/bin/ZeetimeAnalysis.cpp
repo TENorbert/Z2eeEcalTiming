@@ -425,6 +425,8 @@ struct HistSet{
   TH1F*chi2POOT_, *chi2MOOT_, *chi2IT_;
   TH1F*chi2Sig_, *chi2BkgL_, *chi2BkgH_;
   TH2F*chi2VsSeedTime_;
+  TH2F*seedTime1Vsdi_eleMass_,*seedTime2Vsdi_eleMass_;
+  TH1F*di_eleMassSeedTimeMore_,*di_eleMassSeedTimeLess_, *di_eleMassSeedTimeIn_;
 } theHists;
 
 
@@ -506,6 +508,14 @@ void HistSet::book(TFileDirectory subDir, const std::string& post) {
   ZMassLessSeedTime_            =(TH1F*) subDir.make<TH1F>("ZMassLessSeedTime","ZMassMoreSeedTime; t_{seed} [ns]; num. seeds/0.05ns",40.0,-20.0,0.0);
   ZMassMoreSeedTime_            =(TH1F*) subDir.make<TH1F>("ZMassMoreSeedTime","ZMassMoreSeedTime; t_{seed} [ns]; num. seeds/0.05ns",40.0,0.0,20.0);
   numSclusters_       =(TH1F*) subDir.make<TH1F>("num Of Photons"," Number of Photons; Number of Photons",50,0,50);
+
+  di_eleMassSeedTimeIn_         =(TH1F*) subDir.make<TH1F>("di_eleMassSeedTimeIn_","di_eleMass[|t_{e_{1,2}}| < 2ns] ; m(e_{1},e_{2}) [GeV]",80,50.,130.);
+  di_eleMassSeedTimeMore_         =(TH1F*) subDir.make<TH1F>("di_eleMassSeedTimeMore_","di_eleMass[t_{e_{1}} > 3ns or t_{e_{2}} > 3ns] ; m(e_{1},e_{2}) [GeV]",80,50.,130.);
+  di_eleMassSeedTimeLess_         =(TH1F*) subDir.make<TH1F>("di_eleMassSeedTimeLess_","di_eleMass[t_{e_{1}} < -3ns or t_{e_{2}} < -3ns]  ; m(e_{1},e_{2}) [GeV]",80,50.,130.);
+
+  seedTime1Vsdi_eleMass_        =(TH2F*) subDir.make<TH2F>("seedTime1Vsdi_eleMass_","t_{e_{1}} Vs di_eleMass; t_{e_{1}} [ns];  m(e_{1},e_{2}) [GeV]",120,-30.,30.,80,50.0,130.0);
+  seedTime2Vsdi_eleMass_        =(TH2F*) subDir.make<TH2F>("seedTime2Vsdi_eleMass_","t_{e_{2}} Vs di_eleMass; t_{e_{2}} [ns];  m(e_{1},e_{2}) [GeV]",120,-30.,30.,80,50.0,130.0);
+
 }
   
 void HistSet::fill(int sc1, int sc2, int bc1, int bc2 ){
@@ -592,7 +602,27 @@ void HistSet::fill(int sc1, int sc2, int bc1, int bc2 ){
       ZmassChi2Cut_->Fill(diEle.M());
       ZmassChi2CutseedTime_->Fill(bcTime1.seedtime); ZmassChi2CutseedTime_->Fill(bcTime2.seedtime); 
        }
-  
+ 
+   // Both eles are in time |t| < 2ns
+   if( fabs(bcTime1.seedtime) < 2.0 && fabs(bcTime2.seedtime) < 2.0)
+     {
+      di_eleMassSeedTimeIn_->Fill(diEle.M());
+      }
+
+  // either one ele is out of time t > 3ns
+  if( (bcTime1.seedtime > 3.0) ||  (bcTime2.seedtime > 3.0) )
+     {
+      di_eleMassSeedTimeMore_->Fill(diEle.M());
+     }
+  // either one ele is out of time t < -3ns
+  if( (bcTime1.seedtime < -3.0) ||  (bcTime2.seedtime < -3.0) )
+     {
+      di_eleMassSeedTimeLess_->Fill(diEle.M()); 
+     }
+  // Fill electron Time Vs di_eleMass
+     seedTime1Vsdi_eleMass_ ->Fill(bcTime1.seedtime, diEle.M());
+     seedTime2Vsdi_eleMass_ ->Fill(bcTime2.seedtime, diEle.M());
+
    // Fill t > 3, t < -3, |t| < 2  chi2 distribution/ZMass
   if(bcTime1.seedtime > 3.0 && bcTime2.seedtime > 3.0)
      {
