@@ -426,7 +426,7 @@ struct HistSet{
   TH1F*chi2Sig_, *chi2BkgL_, *chi2BkgH_;
   TH2F*chi2VsSeedTime_;
   TH2F*seedTime1Vsdi_eleMass_,*seedTime2Vsdi_eleMass_, *seedTime1VsseedTime2_;
-  TH1F*di_eleMassSeedTimeMore_,*di_eleMassSeedTimeLess_, *di_eleMassSeedTimeIn_;
+  TH1F*di_eleMassSeedTimeMore_,*di_eleMassSeedTimeLess_, *di_eleMassSeedTimeIn_, *di_eleMassBothSeedTimeMore_,*di_eleMassBothSeedTimeLess_;
 } theHists;
 
 
@@ -513,6 +513,8 @@ void HistSet::book(TFileDirectory subDir, const std::string& post) {
   di_eleMassSeedTimeMore_         =(TH1F*) subDir.make<TH1F>("di_eleMassSeedTimeMore_","di_eleMass[ 3.0ns < t_{e_{1}} < 20.0ns or 3.0ns < t_{e_{2}} < 20ns] ; m(e_{1},e_{2}) [GeV]",80,50.,130.);
   di_eleMassSeedTimeLess_         =(TH1F*) subDir.make<TH1F>("di_eleMassSeedTimeLess_","di_eleMass[ -20.0 ns < t_{e_{1}} < -3ns or -20.0ns < t_{e_{2}} < -3ns]  ; m(e_{1},e_{2}) [GeV]",80,50.,130.);
 
+  di_eleMassBothSeedTimeMore_         =(TH1F*) subDir.make<TH1F>("di_eleMassBothSeedTimeMore_","di_eleMass[ 3.0ns < t_{e_{1,2}} < 20.0ns; m(e_{1},e_{2}) [GeV]",80,50.,130.);
+  di_eleMassBothSeedTimeLess_         =(TH1F*) subDir.make<TH1F>("di_eleMassBothSeedTimeLess_","di_eleMass[ -20.0ns < t_{e_{1,2}} < -3.0ns; m(e_{1},e_{2}) [GeV]",80,50.,130.);
   seedTime1Vsdi_eleMass_        =(TH2F*) subDir.make<TH2F>("seedTime1Vsdi_eleMass_","t_{e_{1}} Vs di_eleMass; t_{e_{1}} [ns];  m(e_{1},e_{2}) [GeV]",40,-10.,10.,80,50.0,130.0);
   seedTime2Vsdi_eleMass_        =(TH2F*) subDir.make<TH2F>("seedTime2Vsdi_eleMass_","t_{e_{2}} Vs di_eleMass; t_{e_{2}} [ns];  m(e_{1},e_{2}) [GeV]",40,-10.,10.,80,50.0,130.0);
   seedTime1VsseedTime2_        =(TH2F*) subDir.make<TH2F>("seedTime1Vsseedtime2_","t_{e_{1}} Vs t_{e_{2}}; t_{e_{1}} [ns];  t_{e_{2}} [ns]",40,-10.,10.,40,-10.0,10.0);
@@ -621,6 +623,18 @@ void HistSet::fill(int sc1, int sc2, int bc1, int bc2 ){
      {
       di_eleMassSeedTimeLess_->Fill(diEle.M()); 
      }
+
+  // Both eles are out of time t > 3ns
+  if( (bcTime1.seedtime > 3.0 && bcTime1.seedtime < 20.0) &&  (bcTime2.seedtime > 3.0 && bcTime2.seedtime < 20.0) )
+     {
+      di_eleMassBothSeedTimeMore_->Fill(diEle.M());
+     }
+  // Both eles are out of time t < -3ns
+  if( ( bcTime1.seedtime > -20.0 && bcTime1.seedtime < -3.0) &&  ( bcTime2.seedtime > -20.0 && bcTime2.seedtime < -3.0) )
+     {
+      di_eleMassBothSeedTimeLess_->Fill(diEle.M()); 
+     }
+
   // Fill electron Time Vs di_eleMass
      seedTime1Vsdi_eleMass_ ->Fill(bcTime1.seedtime, diEle.M());
      seedTime2Vsdi_eleMass_ ->Fill(bcTime2.seedtime, diEle.M());
